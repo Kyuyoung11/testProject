@@ -18,7 +18,7 @@ inputs = tokenizer(
 
 
 # GPU 사용
-device = torch.device("cuda")
+device = torch.device("cpu")
 model = ElectraForSequenceClassification.from_pretrained("monologg/koelectra-small-v2-discriminator").to(device)
 
 model.load_state_dict(torch.load("model.pt"))

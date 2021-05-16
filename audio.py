@@ -1,6 +1,6 @@
 import wave
 
-
+#pcm 파일을 wav로 바꿈
 # The parameters are prerequisite information. More specifically,
 # channels, bit_depth, sampling_rate must be known to use this function.
 def pcm2wav(pcm_file, wav_file, channels=1, bit_depth=16, sampling_rate=16000):
@@ -20,4 +20,4 @@ def pcm2wav(pcm_file, wav_file, channels=1, bit_depth=16, sampling_rate=16000):
         obj2write.close()
 
 
-pcm2wav('SDRW2000000001.1.1.1.pcm', 'sample_001.wav', 1, 16, 16000)
+pcm2wav('./SDRW2000000001/SDRW2000000001.1.1.45.pcm', 'joy45.wav', 1, 16, 16000)
