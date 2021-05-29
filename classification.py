@@ -1,7 +1,7 @@
 import pandas as pd
 import torch
 from transformers import AutoTokenizer, ElectraForSequenceClassification
-import model
+import mymodel
 import re
 import json
 
@@ -9,7 +9,7 @@ import json
 labels = ["none", "joy", "annoy", "sad", "disgust", "surprise", "fear"]
 none_words = ["안싫", "안 싫", "안무서", "안놀람", "안놀랐", "안행복", "안기뻐", "안빡","안우울", "안짜증", "안깜짝", "안무섭"]
 pass_words = ["안좋", "안 좋"]
-senti_loss = [5.0, 4.0, 6.5, 6.5, 9.0, 8.0]
+senti_loss = [5.0, 4.0, 6.5, 6.5, 9.0, 9.0]
 
 #file_num = 109
 
@@ -17,15 +17,16 @@ senti_loss = [5.0, 4.0, 6.5, 6.5, 9.0, 8.0]
 tokenizer = AutoTokenizer.from_pretrained("monologg/koelectra-small-v3-discriminator")
 # GPU 사용
 device = torch.device("cuda")
-model = model.HwangariSentimentModel.from_pretrained("Kyuyoung11/haremotions-v1").to(device)
+model = mymodel.HwangariSentimentModel.from_pretrained("Kyuyoung11/haremotions-v1").to(device)
 
-for a in range(170,190,1):
+for a in range(2030,2070,1):
   joy_file = []
   surprise_file = []
   disgust_file = []
+  fear_file = []
 
   file_num = a
-  file_path = "./SDRW2000000"+str(file_num)+".json"
+  file_path = "./SDRW200000"+str(file_num)+".json"
   with open(file_path,"rt", encoding='UTF8') as json_file:
     json_data = json.load(json_file)
     print(json_data)
@@ -33,7 +34,7 @@ for a in range(170,190,1):
       for json_string in json_docu["utterance"]:
         audio_id = json_string["id"]
         text = json_string["form"]
-        if (len(text) <= 10) : continue
+        if (len(text) <= 15) : continue
         enc = tokenizer.encode_plus(text)
         inputs = tokenizer(
           text,
@@ -86,46 +87,30 @@ for a in range(170,190,1):
             label_loss[pre_result - 1] = 0
             result = label_loss.index(max(label_loss)) + 1
 
-        if (result == 1):
-          joy_file.append(audio_id)
-          print("File name : " + audio_id)
-          print(f'Review text : {text}')
+        #if (result == 1):
+        #  joy_file.append(audio_id)
 
 
-          print(f'Sentiment : {labels[result]}')
-
-          print("\n<감정 별 손실 함수 값>")
-          for i in range(0,6):
-
-            print(labels[i+1], ":", label_loss[i])
-
-          print("----------------------------")
-
-        elif (result == 5):
+        if (result == 5):
           surprise_file.append(audio_id)
-          print("File name : " + audio_id)
-          print(f'Review text : {text}')
 
-          print(f'Sentiment : {labels[result]}')
-
-          print("\n<감정 별 손실 함수 값>")
-          for i in range(0, 6):
-            print(labels[i + 1], ":", label_loss[i])
-
-          print("----------------------------")
 
         elif (result == 4):
           disgust_file.append(audio_id)
-          print("File name : " + audio_id)
-          print(f'Review text : {text}')
 
-          print(f'Sentiment : {labels[result]}')
 
-          print("\n<감정 별 손실 함수 값>")
-          for i in range(0, 6):
-            print(labels[i + 1], ":", label_loss[i])
+        elif (result == 6):
+          fear_file.append(audio_id)
+        print("File name : " + audio_id)
+        print(f'Review text : {text}')
 
-          print("----------------------------")
+        print(f'Sentiment : {labels[result]}')
+
+        print("\n<감정 별 손실 함수 값>")
+        for i in range(0, 6):
+          print(labels[i + 1], ":", label_loss[i])
+
+        print("----------------------------")
 
 
 
@@ -154,17 +139,24 @@ for a in range(170,190,1):
 
 
   print(file_num)
+  '''
   for i in range(0, len(joy_file)):
-    file_name = "./SDRW2000000"+str(file_num)+"/"+joy_file[i]+".pcm"
+    file_name = "./SDRW200000"+str(file_num)+"/"+joy_file[i]+".pcm"
     output_file = "joy/"+str(file_num)+"joy"+str(i)+".wav"
     pcm2wav(file_name, output_file, 1, 16, 16000)
+  '''
 
   for i in range(0, len(surprise_file)):
-    file_name = "./SDRW2000000"+str(file_num)+"/"+surprise_file[i]+".pcm"
+    file_name = "./SDRW200000"+str(file_num)+"/"+surprise_file[i]+".pcm"
     output_file = "surprise/"+str(file_num)+"surprise"+str(i)+".wav"
     pcm2wav(file_name, output_file, 1, 16, 16000)
 
   for i in range(0, len(disgust_file)):
-    file_name = "./SDRW2000000"+str(file_num)+"/"+disgust_file[i]+".pcm"
+    file_name = "./SDRW200000"+str(file_num)+"/"+disgust_file[i]+".pcm"
     output_file = "disgust/"+str(file_num)+"disgust"+str(i)+".wav"
+    pcm2wav(file_name, output_file, 1, 16, 16000)
+
+  for i in range(0, len(fear_file)):
+    file_name = "./SDRW200000"+str(file_num)+"/"+fear_file[i]+".pcm"
+    output_file = "fear/"+str(file_num)+"fear"+str(i)+".wav"
     pcm2wav(file_name, output_file, 1, 16, 16000)
