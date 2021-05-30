@@ -17,15 +17,17 @@ class audioClassification():
         self.labels = ["none", "joy", "annoy", "sad", "disgust", "surprise", "fear"]
 
         # 음성 모델 파일명
-        #self.filename = 'xgb_model.model'
+        self.filename = 'xgb_model.model'
+        '''
         with open('mlp_model_relu_adadelta_t.json') as f:
             self.json = f.read()
         self.loaded_model = tf.keras.models.model_from_json(self.json)
 
         self.loaded_model.load_weights('mlp_relu_adadelta_model_t.h5')
+        '''
 
         # 음성 모델 불러오기
-        #self.loaded_model = pickle.load(open(self.filename, 'rb'))
+        self.loaded_model = pickle.load(open(self.filename, 'rb'))
 
         # 텍스트 모델 초기값
         self.none_words = ["안싫", "안 싫", "안무서", "안놀람", "안놀랐", "안행복", "안기뻐", "안빡", "안우울", "안짜증", "안깜짝", "안무섭"]
