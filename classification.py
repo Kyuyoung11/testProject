@@ -25,8 +25,8 @@ def pcm2wav(pcm_file_list, wav_file, channels=1, bit_depth=16, sampling_rate=160
       with open(pcm_file, 'rb') as opened_pcm_file:
         pcm_data += opened_pcm_file.read()
 
-      print(pcm_data)
-      print(type(pcm_data))
+      #print(pcm_data)
+      #print(type(pcm_data))
 
       obj2write = wave.open(wav_file, 'wb')
       obj2write.setnchannels(channels)
@@ -40,7 +40,7 @@ def pcm2wav(pcm_file_list, wav_file, channels=1, bit_depth=16, sampling_rate=160
 labels = ["none", "joy", "annoy", "sad", "disgust", "surprise", "fear"]
 none_words = ["안싫", "안 싫", "안무서", "안놀람", "안놀랐", "안행복", "안기뻐", "안빡", "안우울", "안짜증", "안깜짝", "안무섭"]
 pass_words = ["안좋", "안 좋"]
-senti_loss = [5.0, 4.0, 6.5, 6.5, 9.0, 9.0]
+senti_loss = [6.0, 4.0, 6.5, 6.5, 10.0, 9.0]
 
 # file_num = 109
 
@@ -48,14 +48,14 @@ senti_loss = [5.0, 4.0, 6.5, 6.5, 9.0, 9.0]
 tokenizer = AutoTokenizer.from_pretrained("monologg/koelectra-small-v3-discriminator")
 # GPU 사용
 device = torch.device("cuda")
-model = mymodel.HwangariSentimentModel.from_pretrained("Kyuyoung11/haremotions-v1").to(device)
+model = mymodel.HwangariSentimentModel.from_pretrained("Kyuyoung11/haremotions-v2").to(device)
 
 add_file_num = 0
 total_text = ""
 pcm_list = []
 aa = 0
 
-for a in range(2030, 2040, 1):
+for a in range(1820, 1840, 1):
     joy_file = []
     surprise_file = []
     disgust_file = []
@@ -63,16 +63,17 @@ for a in range(2030, 2040, 1):
 
     file_num = a
     file_path = "./SDRW200000" + str(file_num) + ".json"
-    print("a1")
+    print(file_path)
+
     with open(file_path, "rt", encoding='UTF8') as json_file:
-        print("a2")
+
         json_data = json.load(json_file)
         print(json_data)
         for json_docu in json_data["document"]:
             for json_string in json_docu["utterance"]:
                 audio_id = json_string["id"]
                 text = json_string["form"]
-                print(text)
+
 
 
                 if ("?" in text or "." in text):
@@ -122,13 +123,33 @@ for a in range(2030, 2040, 1):
                         output_file = "joy/" + str(file_num) + "joy" + str(aa) + ".wav"
                         pcm2wav(pcm_list, output_file, 1, 16, 16000)
                         #joy_file.append(audio_id)
+                        print("File name : " + audio_id)
+                        print(f'Review text : {total_text}')
+
+                        print(f'Sentiment : {labels[result]}')
+
+                        print("\n<감정 별 손실 함수 값>")
+                        for i in range(0, 6):
+                            print(labels[i + 1], ":", label_loss[i])
+
+                        print("----------------------------")
 
                     elif (result == 5):
                         output_file = "surprise/" + str(file_num) + "surprise" + str(aa) + ".wav"
                         pcm2wav(pcm_list, output_file, 1, 16, 16000)
                         #surprise_file.append(audio_id)
+                        print("File name : " + audio_id)
+                        print(f'Review text : {total_text}')
 
+                        print(f'Sentiment : {labels[result]}')
 
+                        print("\n<감정 별 손실 함수 값>")
+                        for i in range(0, 6):
+                            print(labels[i + 1], ":", label_loss[i])
+
+                        print("----------------------------")
+
+                    '''
                     elif (result == 4):
                         output_file = "disgust/" + str(file_num) + "disgust" + str(aa) + ".wav"
                         pcm2wav(pcm_list, output_file, 1, 16, 16000)
@@ -139,18 +160,10 @@ for a in range(2030, 2040, 1):
                         output_file = "fear/" + str(file_num) + "fear" + str(aa) + ".wav"
                         pcm2wav(pcm_list, output_file, 1, 16, 16000)
                         #fear_file.append(audio_id)
+                    '''
                     aa+=1
 
-                    print("File name : " + audio_id)
-                    print(f'Review text : {total_text}')
 
-                    print(f'Sentiment : {labels[result]}')
-
-                    print("\n<감정 별 손실 함수 값>")
-                    for i in range(0, 6):
-                        print(labels[i + 1], ":", label_loss[i])
-
-                    print("----------------------------")
 
 
 
@@ -161,7 +174,7 @@ for a in range(2030, 2040, 1):
 
                 else:
                     pcm_list.append("./SDRW200000"+str(file_num)+"/"+audio_id+".pcm")
-                    print(pcm_list)
+
                     add_file_num += 1
                     total_text = total_text + " " + text
 

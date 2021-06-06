@@ -1,7 +1,6 @@
 import numpy as np
 import librosa
 import pickle
-import tensorflow as tf
 
 import wave
 
@@ -11,20 +10,12 @@ import mymodel
 import re
 
 
-
 class audioClassification():
     def __init__(self):
         self.labels = ["none", "joy", "annoy", "sad", "disgust", "surprise", "fear"]
 
         # 음성 모델 파일명
         self.filename = 'xgb_model.model'
-        '''
-        with open('mlp_model_relu_adadelta_t.json') as f:
-            self.json = f.read()
-        self.loaded_model = tf.keras.models.model_from_json(self.json)
-
-        self.loaded_model.load_weights('mlp_relu_adadelta_model_t.h5')
-        '''
 
         # 음성 모델 불러오기
         self.loaded_model = pickle.load(open(self.filename, 'rb'))
@@ -38,7 +29,7 @@ class audioClassification():
         self.device = torch.device("cuda")
 
         # 텍스트 모델 불러오기
-        self.model = mymodel.HwangariSentimentModel.from_pretrained("Kyuyoung11/haremotions-v1").to(self.device)
+        self.model = mymodel.HwangariSentimentModel.from_pretrained("Kyuyoung11/haremotions-v2").to(self.device)
 
     def classify(self, audio_path, text):
 
@@ -95,7 +86,6 @@ class audioClassification():
         label_loss_str = str(output).split(",")
 
         label_loss = [float(x.strip().replace(']', '')) for x in label_loss_str[1:7]]
-        print(sum(label_loss))
 
         print(f'Review text : {text}')
 
@@ -122,20 +112,24 @@ class audioClassification():
             print(self.labels[i + 1], ":", label_loss[i])
 
         if (index == 0):
+            print("b")
             total_result = -1
+        elif (index == result):
+            print("a")
+            total_result = result
+
         else:
             text_score = []
             audio_score = []
             total_score = []
             for i in range(0, len(label_loss)):
                 text_score.append(label_loss[i] / (sum(label_loss) + 10))
-                audio_score.append(y_chunk_model1_proba[0][i + 1] - 0.4)
+                audio_score.append(y_chunk_model1_proba[0][i + 1] - 0.35)
 
             for i in range(0, len(audio_score)):
                 total_score.append(float(audio_score[i]) + float(text_score[i]))
             print(total_score)
 
             total_result = total_score.index(max(total_score))
-
         print("Result : ", self.labels[total_result + 1])
-        return total_result+1
+        return total_result

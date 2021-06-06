@@ -36,4 +36,4 @@ pcm_file_list = []
 pcm_file_list.append('./SDRW2000002030/SDRW2000002030.1.1.1.pcm')
 pcm_file_list.append('./SDRW2000002030/SDRW2000002030.1.1.2.pcm')
 pcm_file_list.append('./SDRW2000002030/SDRW2000002030.1.1.3.pcm')
-pcm2wav(pcm_file_list, 'audio1.wav', 1, 16, 16000)
+pcm2wav(pcm_file_list, 'audio2.wav', 1, 16, 16000)
