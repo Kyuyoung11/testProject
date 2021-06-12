@@ -31,7 +31,7 @@ total_text = ""
 pcm_list = []
 aa = 0
 
-for a in range(1820, 1840, 1):
+for a in range(1180, 1200, 1):
     joy_file = []
     surprise_file = []
     disgust_file = []
@@ -66,32 +66,21 @@ for a in range(1820, 1840, 1):
                         pcm2wav(pcm_list, output_file, 1, 16, 16000)
 
 
-                        #joy_file.append(audio_id)
-                        print("File name : " + audio_id)
                         print(f'Review text : {total_text}')
 
                         print(f'Sentiment : {classification.labels[result]}')
 
-                        print("\n<감정 별 손실 함수 값>")
-                        for i in range(0, 6):
-                            print(classification.labels[i + 1], ":", classification.senti_loss[i])
 
-                        print("----------------------------")
 
                     elif (result == 5):
                         output_file = "surprise/" + str(file_num) + "surprise" + str(aa) + ".wav"
                         pcm2wav(pcm_list, output_file, 1, 16, 16000)
                         #surprise_file.append(audio_id)
-                        print("File name : " + audio_id)
                         print(f'Review text : {total_text}')
 
                         print(f'Sentiment : {classification.labels[result]}')
 
-                        print("\n<감정 별 손실 함수 값>")
-                        for i in range(0, 6):
-                            print(classification.labels[i + 1], ":", classification.senti_loss[i])
 
-                        print("----------------------------")
 
                     '''
                     elif (result == 4):

@@ -111,12 +111,10 @@ class audioClassification():
         for i in range(0, 6):
             print(self.labels[i + 1], ":", label_loss[i])
 
-        if (index == 0):
-            print("b")
+        if (index == 0 or (result == 0 and pre_result == 4) or (result == 0 and pre_result == 5)):
             total_result = -1
-        elif (index == result):
-            print("a")
-            total_result = result
+        elif (index == pre_result - 1):
+            total_result = index
 
         else:
             text_score = []
@@ -131,5 +129,6 @@ class audioClassification():
             print(total_score)
 
             total_result = total_score.index(max(total_score))
+        print(total_result)
         print("Result : ", self.labels[total_result + 1])
-        return total_result
+        return total_result+1
