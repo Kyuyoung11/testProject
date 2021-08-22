@@ -42,18 +42,30 @@ def most_common_top_1(candidates):
 def split1():
     i = 0
     label = 0
+    pass_file = []
 
     f2 = open('text_fromaudio.csv', 'w', encoding='utf-8-sig', newline='')
     wr = csv.writer(f2)
+
+    f3 = open('test_file.csv', 'r', encoding='utf-8-sig')
+    rdr = csv.reader(f3)
+    for line in rdr:
+        pass_file.append(line[0])
+    f3.close()
+
+    print(pass_file)
+
 
     wr.writerow(['text', 'index'])
 
 
     for a in range(0, len(file_name)):
+
         f = open(file_name[a], 'r', encoding='utf-8-sig')
         rdr = csv.reader(f)
 
         for line in rdr:
+            if (line[0] in pass_file): continue
             #print(line[0])
 
             #X, sr = librosa.load(file_path, sr=None)
@@ -160,4 +172,4 @@ def split2():
 
 
 
-split2()
+split1()
